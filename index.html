@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>RANDOM DICE : PvP Defence 協同模式產出換算器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="input-focused">
+
+    <canvas id="dustCanvas"></canvas>
+
+    <div id="landingPage">
+        <button id="landingThemeToggle" title="切換主題"></button>
+        <div id="landing-perspective-wrapper">
+            <div id="landingContent">
+                 <h1 id="landingTitle">RANDOM DICE : PvP Defence<span class="sub"></span></h1>
+                 <p id="clickPrompt"></p>
+            </div>
+        </div>
+        <div id="languageSelector" class="glass">
+             <h3 id="languageTitle">
+                  <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"></path></svg>
+             </h3>
+             <div id="languageList">
+                  <button data-lang="zh-CN">简中</button>
+                  <button data-lang="zh-TW">繁中</button>
+                  <button data-lang="en">English</button>
+                  <button data-lang="ja">日本語</button>
+                  <button data-lang="ko">한국어</button>
+             </div>
+        </div>
+    </div>
+
+    <div id="appContainer">
+        <div id="topBar">
+             <button class="mode-toggle" id="btnW2C_top"></button>
+             <button class="mode-toggle" id="btnC2W_top"></button>
+             <button class="mode-toggle" id="btnG2W_top"></button>
+        </div>
+        <button id="settingsToggleGlobal" title="設定" aria-label="設定" class="glow-on-hover">
+             <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.08-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12-.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69-.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.08.49 0 .61.22l2-3.46c.12-.22.07.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
+             <span class="button-text"></span>
+        </button>
+        <div id="settingsPopupGlobal" class="glass">
+             <div class="settings-item">
+                 <label for="langSelectGlobal"></label>
+                 <select id="langSelectGlobal" aria-label="選擇語言">
+                     <option value="auto"></option>
+                     <option value="zh-TW">繁中</option>
+                     <option value="zh-CN">简中</option>
+                     <option value="en">English</option>
+                     <option value="ja">日本語</option>
+                     <option value="ko">한국어</option>
+                 </select>
+             </div>
+             <div class="settings-item">
+                 <label for="themeSelectGlobal"></label>
+                 <select id="themeSelectGlobal" aria-label="選擇主題">
+                     <option value="system"></option>
+                     <option value="light"></option>
+                     <option value="dark"></option>
+                 </select>
+             </div>
+             <div class="settings-item cursor-setting">
+                 <label for="cursorSelectGlobal"></label>
+                 <select id="cursorSelectGlobal" aria-label="選擇游標樣式">
+                     <option value="custom"></option>
+                     <option value="native"></option>
+                 </select>
+             </div>
+        </div>
+
+        <div id="mainView">
+            <div id="modeSelectionView">
+                <div id="modeSelectionHint"></div>
+                <div id="modeSelectionButtonsWrapper">
+                     <button class="mode-select-btn glow-on-hover" id="btnW2C_main"></button>
+                     <button class="mode-select-btn glow-on-hover" id="btnC2W_main"></button>
+                     <button class="mode-select-btn glow-on-hover" id="btnG2W_main"></button>
+                </div>
+            </div>
+
+            <div id="calculatorView">
+                <div id="calculatorFlexContainer">
+                    <div id="calculatorContentWrapper">
+                        <div id="inputContainerWrapper">
+                            <label id="inputLabel" for="inputContainer"></label>
+                            <div id="inputContainer"></div>
+                            <div id="resourceInputContainer">
+                                <div class="resource-toggle">
+                                    <input type="radio" id="resourceGold" name="resourceType" value="gold" checked>
+                                    <label for="resourceGold"></label>
+                                    <input type="radio" id="resourceDiamond" name="resourceType" value="diamond">
+                                    <label for="resourceDiamond"></label>
+                                </div>
+                                <div id="resourceInputWrapper">
+                                    <div class="input-wrapper">
+                                        <input type="text" id="resourceInput" class="calc-input" inputmode="decimal" pattern="[0-9,]*">
+                                        <button class="clear-single-input" title="清除"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg></button>
+                                    </div>
+                                </div>
+                                <select id="resourceRankSelect"></select>
+                            </div>
+                            <div id="inputActions">
+                                <button id="addInputBtn" class="input-action-btn glow-on-hover" title="新增欄位">
+                                     <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                                </button>
+                                <button id="calculateBtn" class="input-action-btn glow-on-hover"></button>
+                                <button id="clearAllInputsBtn" class="input-action-btn glow-on-hover" title="清除全部">
+                                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                                </button>
+                            </div>
+                            <p id="calculationHint"></p>
+                        </div>
+
+                        <div id="resultsContainer" class="glass">
+                            <div id="resultOutput"><div style="text-align: center; padding: 2rem 0; color: var(--text-muted-color);" data-i18n="calculator.resultPlaceholder"></div></div>
+                            <div id="resultsFooter">
+                                <p id="resultInteractionHint"></p>
+                                <button id="multiCopyBtn" class="subtle-btn glow-on-hover" style="display: none;">
+                                    <svg viewBox="0 0 24 24" style="width: 1.1em; height: 1.1em; margin-right: 0.5em;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-1 16H8V7h11v14zM10 9h7v2h-7zm0 4h7v2h-7zm0 4h5v2h-5z"></path></svg>
+                                    <span></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sideNavBar" class="glass">
+            <div class="nav-item active glow-on-hover" data-target="calculator">
+                <div class="item-icon"><svg viewBox="0 0 24 24"><path d="M19.73 12.67a.996.996 0 0 0-.03-1.34l-1.7-1.7a.996.996 0 0 0-1.41 0L16 10.29V6.5c0-.28-.22-.5-.5-.5h-2c-.28 0-.5.22-.5.5v3.79l-.64-.64a.996.996 0 0 0-1.41 0l-1.7 1.7c-.39.39-.39 1.02 0 1.41l.03.03 1.7 1.7c.39.39 1.02.39 1.41 0L12 13.71v4.79c0 .28.22.5.5.5h2c.28 0 .5-.22.5-.5v-4.79l.64.64c.39.39 1.02.39 1.41 0l1.7-1.7c.39-.38.39-1.02 0-1.41l-.03-.03zm-3.02.62L15 15.04v3.46h-1v-3.46l-1.71-1.71-1.29 1.29-1.04-1.04 1.29-1.29L9.54 14H6.08V9.96h3.46L11.29 8.25l1.04 1.04-1.29 1.29 1.71 1.71h3.46v1.04h-3.46l1.71 1.71zM4.27 11.33c.39-.39.39-1.02 0-1.41l-1.7-1.7a.996.996 0 0 0-1.41 0L.51 8.86a.996.996 0 0 0 0 1.41l.03.03 1.7 1.7c.39.39 1.02.39 1.41 0l.62-.62v4.79c0 .28.22.5.5.5h2c.28 0 .5-.22.5-.5v-4.79l.64.64c.39.39 1.02.39 1.41 0l.29-.29L8 12l-1.29 1.29-1.04-1.04 1.29-1.29L5.25 9.25H1.79v1.04h3.46L4.27 11.33z"></path></svg></div>
+                <span class="item-label"></span>
+            </div>
+            <div class="nav-item glow-on-hover" data-target="common">
+                <div class="item-icon"><svg viewBox="0 0 24 24"><path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"></path></svg></div>
+                <span class="item-label"></span>
+            </div>
+            <div class="nav-item glow-on-hover" data-target="chart">
+                <div class="item-icon"><svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"></path></svg></div>
+                <span class="item-label"></span>
+            </div>
+            <div class="nav-item glow-on-hover" data-target="history">
+                <div class="item-icon"><svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8H12z"></path></svg></div>
+                <span class="item-label"></span>
+            </div>
+        </div>
+        
+        <div id="commonPanel" class="sub-view-panel">
+             <button class="back-button glow-on-hover">
+                  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+             </button>
+             <div class="module-wrapper">
+                 <div class="module">
+                     <h2></h2>
+                     <div class="table-container">
+                         <div class="table-box">
+                             <h3></h3>
+                             <div class="table-responsive">
+                                 <table id="w2cTablePanel"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+                             </div>
+                         </div>
+                         <div class="table-box">
+                             <h3></h3>
+                             <div class="table-responsive">
+                                 <table id="c2wTablePanel"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+        <div id="chartPanel" class="sub-view-panel">
+             <button class="back-button glow-on-hover">
+                  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+             </button>
+            <div class="module-wrapper">
+                 <div class="module">
+                     <h2></h2>
+                     <div class="chart-container">
+                         <canvas id="chartPanelCanvas"></canvas>
+                         <div class="chart-zoom-buttons">
+                             <input type="range" id="chartZoomSlider" min="1" max="100" step="0.1" value="1" style="width: 120px;">
+                         </div>
+                     </div>
+                     <div id="chart-pan-container">
+                        <div id="pan-track">
+                            <div id="pan-thumb"></div>
+                        </div>
+                        <div id="pan-ruler">
+                            <svg id="pan-ruler-svg"></svg>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+        <div id="historyPanel" class="sub-view-panel">
+             <button class="back-button glow-on-hover">
+                  <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"></path></svg>
+             </button>
+            <div class="module-wrapper">
+                 <div class="module">
+                    <div class="history-header">
+                        <h2></h2>
+                        <button id="clearHistoryPanel" class="subtle-btn glow-on-hover">
+                           <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                           <span class="text"></span>
+                        </button>
+                    </div>
+                     <div class="table-responsive">
+                         <table id="historyTablePanel">
+                             <thead><tr><th></th><th></th><th></th><th></th></tr></thead>
+                             <tbody></tbody>
+                         </table>
+                     </div>
+                     <div id="historyPaginationPanel"></div>
+                 </div>
+            </div>
+        </div>
+        
+         <div id="modalOverlayGlobal" class="modal-overlay">
+             <div id="rewardModalGlobal" class="modal-content-container">
+                 <div class="details-modal-like">
+                     <button class="modal-close-btn">&times;</button>
+                     <h3></h3>
+                     <div class="rank-selector-container">
+                         <label for="rankSelectGlobal"></label>
+                         <select id="rankSelectGlobal"></select>
+                     </div>
+                     <div id="rewardDetailsGlobal" class="modal-content-wrapper"></div>
+                 </div>
+             </div>
+         </div>
+         <div id="cardActionChoiceModalOverlay" class="modal-overlay">
+            <div id="cardActionChoiceModal" class="modal-content-container">
+                <div class="details-modal-like">
+                    <button class="modal-close-btn">&times;</button>
+                    <h4 id="cardActionChoiceTitle"></h4>
+                    <div id="cardActionChoiceButtons">
+                        <button id="cardActionShowFull" class="subtle-btn glow-on-hover"></button>
+                        <button id="cardActionShowReward" class="subtle-btn glow-on-hover"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="longNumModalOverlay" class="modal-overlay">
+            <div id="longNumModal" class="modal-content-container">
+                 <div class="details-modal-like">
+                     <button class="modal-close-btn">&times;</button>
+                     <button class="copy-icon" title="複製">
+                         <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"></path></svg>
+                     </button>
+                     <h3 data-i18n="longNum.fullValueTitle"></h3>
+                     <div id="longNumberDisplay" class="modal-content-wrapper"></div>
+                 </div>
+            </div>
+        </div>
+        <div id="processDetailsModalOverlay" class="modal-overlay">
+            <div id="processDetailsModal" class="modal-content-container">
+                <div class="details-modal-like">
+                    <button class="modal-close-btn">&times;</button>
+                    <div id="processDetailsContent" class="modal-content-wrapper"></div>
+                </div>
+            </div>
+        </div>
+        <div id="rangeResultModalOverlay" class="modal-overlay">
+            <div id="rangeResultModal" class="modal-content-container">
+                <div class="details-modal-like">
+                    <button class="modal-close-btn">&times;</button>
+                    <h3 id="rangeResultTitle"></h3>
+                    <div id="rangeResultContent" class="modal-content-wrapper"></div>
+                </div>
+            </div>
+        </div>
+
+         <div id="notificationGlobal"></div>
+    </div>
+
+    <div class="cursor"> <div class="cursor-inner"></div> </div>
+    <div class="selection-box"></div>
+    <div class="selection-cursor-indicator"></div>
+
+<script src="js/app.js"></script>
+<script src="js/landing.js"></script>
+<script src="js/cursor.js"></script>
+
+</body>
+</html>
