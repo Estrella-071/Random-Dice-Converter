@@ -1,11 +1,11 @@
-[繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+[繁體中文](README/README.zh-TW.md) | [简体中文](README/README.zh-CN.md) | [English](README.md) | [日本語](README/README.ja.md) | 한국어
 ***
 
 # 랜덤 다이스 협동전 보상 변환기
 
 "랜덤 다이스: PvP 디펜스" 플레이어를 위해 설계된 고성능 웹 애플리케이션으로, 편리한 협동 모드 산출물 변환 및 데이터 시각화 기능을 제공합니다.
 
-![프로젝트 스크린샷](assets/screenshot01.png)
+![프로젝트 스크린샷](assets/screenshot_ko01.png)
 
 ---
 ## 주요 기능 (Features)

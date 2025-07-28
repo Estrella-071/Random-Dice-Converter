@@ -1,9 +1,11 @@
-[繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+繁體中文 | [简体中文](README/README.zh-CN.md) | [English](README.md) | [日本語](README/README.ja.md) | [한국어](README/README.ko.md)
 ***
 ---
-### 一款適用於《Random Dice Defense : PvP TD》合作模式換算器，旨在提供方便的協同模式產出換算與數據視覺化功能。
+### Random Dice 協同模式產出換算器
 
-![網頁截圖](assets/screenshot01.png)
+一款適用於《Random Dice Defense : PvP TD》合作模式換算器，旨在提供方便的協同模式產出換算與數據視覺化功能。
+
+![網頁截圖](assets/screenshot_tw01.png)
 
 ---
 ## 功能概覽 (Features)
@@ -22,6 +24,7 @@
     * **多選複製**: 可一次複製多項結果。
 * **數據視覺化圖表**:
     * 提供互動式圖表，將回合數與卡片數的非線性成長關係視覺化。
+
 * **其他功能**:
     * **歷史紀錄**: 自動暫存近期的查詢。
     * **常用表格**: 預存部分數值。

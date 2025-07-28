@@ -1,11 +1,11 @@
-[繁體中文](README.zh-TW.md) | [简体中文](README.zh-CN.md) | [English](README.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+[繁體中文](README/README.zh-TW.md) | [简体中文](README/README.zh-CN.md) | [English](README.md) | 日本語 | [한국어](README/README.ko.md)
 ***
 
 # ランダムダイス 協力モード報酬換算ツール
 
 「ランダムダイス：PvPディフェンス」プレイヤー向けに設計された高性能ウェブアプリケーション。協力モードの報酬換算とデータ可視化機能を提供します。
 
-![プロジェクトのスクリーンショット](assets/screenshot01.png)
+![プロジェクトのスクリーンショット](assets/screenshot_ja01.png)
 
 ---
 ## 機能概要 (Features)
