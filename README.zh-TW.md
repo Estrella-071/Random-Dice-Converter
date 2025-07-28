@@ -5,7 +5,7 @@
 </div>
 
 ---
-### Random Dice 協同模式產出換算器
+# Random Dice 協同模式產出換算器
 
 一款適用於《Random Dice Defense : PvP TD》合作模式換算器，
 旨在提供方便的協同模式產出換算與數據視覺化功能。
