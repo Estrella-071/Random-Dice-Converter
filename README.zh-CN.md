@@ -1,15 +1,17 @@
 <div align="center">
 
-[繁體中文](README/README.zh-TW.md) | 简体中文 | [English](README.md) | [日本語](README/README.ja.md) | [한국어](README/README.ko.md)
+[繁體中文](README.zh-TW.md)　|　简体中文　|　[English](README.md)　|　[日本語](README.ja.md)　|　[한국어](README.ko.md)
 
 </div>
----
 
+---
 # Random Dice 协同模式产出换算器
 
-一款适用于《Random Dice Defense : PvP TD》合作模式的换算器，旨在提供便捷的协同模式产出换算与数据可视化功能。
+一款适用于《Random Dice Defense : PvP TD》合作模式的换算器，
+旨在提供便捷的协同模式产出换算与数据可视化功能。
 
 ![项目截图](assets/screenshot_cn01.png)
+
 ![项目截图](assets/screenshot_tw02.png)
 
 ---
@@ -41,3 +43,4 @@
 * **动画**: `GSAP (GreenSock Animation Platform)`
 
 ---
+Developed by Estrella-071

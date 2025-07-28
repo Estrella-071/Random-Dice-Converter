@@ -1,15 +1,17 @@
 <div align="center">
 
-[繁體中文](README/README.zh-TW.md) | [简体中文](README/README.zh-CN.md) | [English](README.md) | 日本語 | [한국어](README/README.ko.md)
+[繁體中文](README.zh-TW.md)　|　[简体中文](README.zh-CN.md)　|　[English](README.md)　|　日本語　|　[한국어](README.ko.md)
 
 </div>
----
 
+---
 # ランダムダイス 協力モード報酬換算ツール
 
-「ランダムダイス：PvPディフェンス」プレイヤー向けに設計された高性能ウェブアプリケーション。協力モードの報酬換算とデータ可視化機能を提供します。
+「ランダムダイス：PvPディフェンス」プレイヤー向けに設計された高性能ウェブアプリケーション。
+協力モードの報酬換算とデータ可視化機能を提供します。
 
 ![プロジェクトのスクリーンショット](assets/screenshot_ja01.png)
+
 ![プロジェクトのスクリーンショット](assets/screenshot_ja02.png)
 
 ---
@@ -41,3 +43,4 @@
 * **アニメーションライブラリ**: `GSAP (GreenSock Animation Platform)`
 
 ---
+Developed by Estrella-071
