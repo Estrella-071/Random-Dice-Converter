@@ -1,4 +1,8 @@
+<div align="center">
+
 [繁體中文](README/README.zh-TW.md) | [简体中文](README/README.zh-CN.md) | English | [日本語](README/README.ja.md) | [한국어](README/README.ko.md)
+
+</div>
 ***
 
 # Co-op Mode Converter for Random Dice Defense : PvP

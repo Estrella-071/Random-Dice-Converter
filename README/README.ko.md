@@ -1,4 +1,8 @@
+<div align="center">
+
 [繁體中文](README/README.zh-TW.md) | [简体中文](README/README.zh-CN.md) | [English](README.md) | [日本語](README/README.ja.md) | 한국어
+
+</div>
 ***
 
 # 랜덤 다이스 협동전 보상 변환기

@@ -1,4 +1,8 @@
+<div align="center">
+
 繁體中文 | [简体中文](README/README.zh-CN.md) | [English](README.md) | [日本語](README/README.ja.md) | [한국어](README/README.ko.md)
+
+</div>
 ***
 ---
 ### Random Dice 協同模式產出換算器
