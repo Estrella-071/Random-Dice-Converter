@@ -3,13 +3,14 @@
 [繁體中文](README/README.zh-TW.md) | [简体中文](README/README.zh-CN.md) | English | [日本語](README/README.ja.md) | [한국어](README/README.ko.md)
 
 </div>
-***
+---
 
 # Co-op Mode Converter for Random Dice Defense : PvP
 
 A high-performance web application designed for "Random Dice: PvP Defense" players, aimed at providing convenient co-op mode output conversions and data visualization features.
 
 ![Project Screenshot](assets/screenshot_en01.png)
+![Project Screenshot](assets/screenshot_en02.png)
 
 ---
 ## Features
