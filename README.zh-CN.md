@@ -9,7 +9,9 @@
 
 一款适用于《Random Dice Defense : PvP TD》合作模式的换算器，
 旨在提供便捷的协同模式产出换算与数据可视化功能。
+## Access URL: https://estrella-071.github.io/Random-Dice-Coop-Converter/
 
+---
 ![项目截图](assets/screenshot_cn01.png)
 
 ![项目截图](assets/screenshot_tw02.png)
