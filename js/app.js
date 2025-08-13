@@ -883,19 +883,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (isTouchDevice || window.innerWidth <= 1024) {
                 if (isFocused) {
-                    gsap.set(resultsContainer, {clearProps: "max-height,padding,margin,opacity"});
-                    if (resultsContainer.classList.contains('visible-true')) {
-                        gsap.to(resultsContainer, {
-                            maxHeight: 0,
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                            marginTop: 0,
-                            opacity: 0,
-                            duration: 0.3 * animSpeedMultiplier,
-                            ease: 'power2.in',
-                            onComplete: () => resultsContainer.style.pointerEvents = 'none'
-                        });
-                    }
+                    gsap.set(resultsContainer, { clearProps: "all" });
                     inputContainerWrapper.style.pointerEvents = 'auto';
                     gsap.to(inputContainerWrapper, {
                         maxHeight: '100vh', 
@@ -3375,8 +3363,13 @@ document.addEventListener("DOMContentLoaded", function() {
             
             const targetHeight = Math.max(calculatedHeight, resultsHeight);
 
-            gsap.to(inputContainerWrapper, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
-            gsap.to(resultsContainer, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
+                if (window.innerWidth > 1024) {
+                    gsap.to(inputContainerWrapper, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
+                } else {
+                    gsap.set(inputContainerWrapper, { clearProps: "minHeight" });
+                }
+
+                gsap.to(resultsContainer, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
         }
 
         function toggleFullscreen() {
