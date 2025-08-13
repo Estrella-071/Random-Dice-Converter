@@ -2370,23 +2370,22 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
         inputHelperPopup.addEventListener('mouseup', e => {
+            const item = e.target.closest('.helper-item');
+            if (!item) {
+                return; 
+            }
+
             if (helperMouseDownTimer) { 
                 clearTimeout(helperMouseDownTimer);
-                const item = e.target.closest('.helper-item');
-                if (item) {
-                    if (activeInputForHelper) {
-                        activeInputForHelper.value = item.dataset.value;
-                        activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
-                        addInputFieldAndFocus();
-                        hideInputHelper();
-                    }
+                if (activeInputForHelper) {
+                    activeInputForHelper.value = item.dataset.value;
+                    activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
+                    addInputFieldAndFocus();
+                    hideInputHelper();
                 }
             } else { 
-                    const item = e.target.closest('.helper-item');
-                    if (item) {
-                    addInputFieldAndFocus();
-                    }
-                    hideInputHelper();
+                addInputFieldAndFocus();
+                hideInputHelper();
             }
         });
 
