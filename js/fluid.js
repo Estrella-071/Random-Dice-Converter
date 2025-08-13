@@ -1,4 +1,3 @@
-<script>
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('fluidCanvas');
     if (!canvas) return;
@@ -506,4 +505,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     update();
 });
-</script>
