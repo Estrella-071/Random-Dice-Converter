@@ -2270,6 +2270,14 @@ document.addEventListener("DOMContentLoaded", function() {
         inputContainer.addEventListener('input', handleInputEvent); 
         inputContainer.addEventListener('keydown', handleKeyDownEvent); 
         inputContainer.addEventListener('paste', handlePasteEvent); 
+        inputContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('calc-input')) {
+                if (inputHelperPopup.style.display !== 'flex') {
+                    activeInputForHelper = e.target;
+                    showInputHelper(e.target);
+                }
+            }
+        });
         inputContainer.addEventListener('click', handleClearButtonEvent);
         inputContainer.addEventListener('compositionstart', () => { isComposing = true; });
         inputContainer.addEventListener('compositionend', (e) => { isComposing = false; handleInputEvent(e); });
