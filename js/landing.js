@@ -87,8 +87,8 @@ document.addEventListener("DOMContentLoaded", function() {
             mousedownTime = Date.now();
         });
         landingPage.addEventListener("mouseup", () => {
-                if (mousedownTime > 0) mousedownDuration = Date.now() - mousedownTime;
-                mousedownTime = 0;
+            if (mousedownTime > 0) mousedownDuration = Date.now() - mousedownTime;
+            mousedownTime = 0;
         });
         
         const fsBtn = document.getElementById('fullscreenBtn');

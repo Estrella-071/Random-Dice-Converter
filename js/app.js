@@ -113,6 +113,9 @@ document.addEventListener("DOMContentLoaded", function() {
         let originalChartData = {};
         let lastCalculatedInputString = null;
         let t = translations[currentLang];
+        let isPreviewing = false;
+        let isDraggingFromHelper = false;
+        let originalInputValue = '';
         let currentCardsForModal = 0n;
         let isMultiCopyMode = false;
         let activeInputForHelper = null;
@@ -966,7 +969,7 @@ document.addEventListener("DOMContentLoaded", function() {
             if (wrappers.length === 0) return;
             
             const charWidth = 22; 
-            const basePadding = 60;
+            const basePadding = 110;
             const minWidth = 100;
             const maxWidth = 400;
         
@@ -1090,37 +1093,42 @@ document.addEventListener("DOMContentLoaded", function() {
                     return false;
                 }
             
-                recordInputPositions();
-                
-                const newIndex = currentInputs.length;
-                const newWrapper = createInputFieldElement(newIndex);
-                const addBtn = document.getElementById('addInputBtn');
-                inputContainer.insertBefore(newWrapper, addBtn);
-                
-                newWrapper.querySelector('.calc-input').addEventListener('input', adjustInputWidths);
-                adjustInputWidths();
-                updateInputContainerHeight();
-                
-                if (inputContainer.querySelectorAll('.input-wrapper').length >= CONFIG.maxInputs) {
+            recordInputPositions();
+            
+            const newIndex = inputContainer.querySelectorAll('.input-wrapper').length;
+            const newWrapper = createInputFieldElement(newIndex);
+            const addBtn = document.getElementById('addInputBtn');
+            inputContainer.insertBefore(newWrapper, addBtn);
+            
+            newWrapper.querySelector('.calc-input').addEventListener('input', adjustInputWidths);
+            adjustInputWidths();
+            updateInputContainerHeight();
+            
+            if (inputContainer.querySelectorAll('.input-wrapper').length >= CONFIG.maxInputs) {
                 gsap.to(addBtn, {
                     width: 0, opacity: 0, scale: 0.5, margin: 0, padding: 0,
                     duration: CONFIG.animation.durationShort * animSpeedMultiplier, ease: CONFIG.animation.easeIn,
                     onComplete: () => { addBtn.style.display = 'none'; }
                 });
-                }
-                
-                if (!isTouchDevice) {
-                newWrapper.offsetHeight;
+            }
+            
+            const newInp = newWrapper.querySelector('.calc-input');
+            if (!isTouchDevice && newInp) {
                 playInputFlipAnimation();
-                const newInp = newWrapper.querySelector('.calc-input');
-                if (newInp) setTimeout(() => newInp.focus({ preventScroll: true }), 0);
-                }
                 
-                gsap.fromTo(newWrapper, 
-                    { autoAlpha: 0 },
-                    { autoAlpha: 1, duration: CONFIG.animation.durationShort * animSpeedMultiplier, ease: CONFIG.animation.easeStandard }
-                );
-                return true;
+                setTimeout(() => {
+                    newInp.focus({ preventScroll: true });
+                    setTimeout(() => {
+                        showInputHelper(newInp);
+                    }, 50);
+                }, 10);
+            }
+            
+            gsap.fromTo(newWrapper, 
+                { autoAlpha: 0 },
+                { autoAlpha: 1, duration: CONFIG.animation.durationShort * animSpeedMultiplier, ease: CONFIG.animation.easeStandard }
+            );
+            return true;
         }
 
         function handleInputEvent(e) { 
@@ -1453,40 +1461,43 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!resultsContainer.classList.contains('visible-true') && !forceClear) {
                 return;
             }
-            
+
             setInputState(true);
             multiCopyBtn.style.display = 'none';
             exitMultiCopyMode();
-            
 
-            resultsContainer.classList.remove('visible-true');
+            const duration = CONFIG.animation.durationLong * animSpeedMultiplier * 1.2;
+            const ease = "power2.inOut";
+
+            const currentX = gsap.getProperty(inputContainerWrapper, "x");
 
             gsap.to(inputContainerWrapper, { 
                 x: 0, 
-                duration: CONFIG.animation.durationLong * animSpeedMultiplier, 
-                ease: CONFIG.animation.easeStandard, 
-                className: "-=slide-left" 
+                duration: duration, 
+                ease: ease,
+                onComplete: () => {
+                    inputContainerWrapper.classList.remove('slide-left');
+                    gsap.set(inputContainerWrapper, { clearProps: "transform" });
+                }
             });
 
             gsap.to(resultsContainer, { 
                 autoAlpha: 0, 
-                duration: CONFIG.animation.durationLong * animSpeedMultiplier, 
-                ease: CONFIG.animation.easeStandard, 
-                className: "-=fade-in",
+                duration: duration, 
+                ease: ease,
                 onComplete: () => {
+                    resultsContainer.classList.remove('visible-true', 'fade-in');
                     resultsContainer.style.display = 'none';
                     resultOutput.innerHTML = `<div style="text-align: center; padding: 2rem 0; color: var(--text-muted-color);" data-i18n="calculator.resultPlaceholder">${t?.calculator?.resultPlaceholder || 'Results...'}</div>`;
                 }
             });
-            
+
             inputContainer.querySelectorAll('.calc-input.error').forEach(input => input.classList.remove('error'));
             if(resourceInput) resourceInput.classList.remove('error');
-            
             lastCalculatedInputString = null;
-
             updateInputContainerHeight();
         }
-
+        
         function updateProcessDetails(inputStr, steps = [], extraData = null) {
             if (!processDetailsContent) return;
             let html = '';
@@ -2108,8 +2119,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
                     gsap.to(settingsPopupGlobal, { autoAlpha: 0, y: -10 * animSpeedMultiplier, scale: 0.98, duration: CONFIG.animation.durationShort * animSpeedMultiplier, ease: CONFIG.animation.easeIn });
                 }
-                    if (inputHelperPopup.style.display === 'flex' && !inputHelperPopup.contains(event.target) && !event.target.closest('.input-wrapper')) {
-                    hideInputHelper();
+                    if (inputHelperPopup.style.display === 'flex' && !inputHelperPopup.contains(event.target) && !event.target.closest('.input-wrapper') && !isDraggingFromHelper) {
+                        hideInputHelper();
                 }
                 modalOverlays.forEach(overlay => {
                     if (overlay.classList.contains('visible') && event.target === overlay) {
@@ -2318,10 +2329,14 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         
         calculatorFlexContainer.addEventListener('click', (e) => {
-                if(e.target === calculatorFlexContainer || e.target === calculatorContentWrapper) {
-                    e.stopPropagation();
-                    handleCalculationTrigger();
-                }
+            if (isDraggingFromHelper) {
+                return; 
+            }
+            
+            if(e.target === calculatorFlexContainer || e.target === calculatorContentWrapper) {
+                e.stopPropagation();
+                handleCalculationTrigger();
+            }
         });
 
         resultOutput.addEventListener('dragstart', handleDragStart);
@@ -2330,50 +2345,72 @@ document.addEventListener("DOMContentLoaded", function() {
         resultOutput.addEventListener('drop', handleDrop);
     
         inputContainer.addEventListener('focusout', e => {
-                if (e.target.classList.contains('calc-input')) {
-                    setTimeout(() => {
-                    if (!inputHelperPopup.contains(document.activeElement) && activeInputForHelper !== document.activeElement) {
+            if (e.target.classList.contains('calc-input')) {
+                setTimeout(() => {
+                    if (!inputHelperPopup.contains(document.activeElement) && activeInputForHelper !== document.activeElement && !isPreviewing) {
                         hideInputHelper();
                     }
-                    }, 150);
-                }
+                }, 150);
+            }
         });
+
         inputContainer.addEventListener('input', debounce(e => {
             if (e.target.classList.contains('calc-input')) {
                 updateHelperSuggestions(e.target);
             }
         }, 150));
 
+
         inputHelperPopup.addEventListener('mousedown', e => {
-            e.preventDefault();
             const item = e.target.closest('.helper-item');
-            if (item) {
-                helperMouseDownTimer = setTimeout(() => {
-                    if (activeInputForHelper) {
-                        activeInputForHelper.value = item.dataset.value;
-                        activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
-                        helperMouseDownTimer = null; 
-                    }
-                }, 200); 
+            if (!item || !activeInputForHelper) return;
+            e.preventDefault();
+            isDraggingFromHelper = true; 
+            isPreviewing = true;
+            originalInputValue = activeInputForHelper.value;
+            activeInputForHelper.value = item.dataset.value;
+            activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+
+        inputHelperPopup.addEventListener('mouseover', e => {
+            if (!isPreviewing) return;
+            const item = e.target.closest('.helper-item');
+            if (item && activeInputForHelper) {
+                activeInputForHelper.value = item.dataset.value;
+                activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
             }
         });
-        inputHelperPopup.addEventListener('mouseup', e => {
-            const item = e.target.closest('.helper-item');
-            if (!item) {
-                return; 
-            }
 
-            if (helperMouseDownTimer) { 
-                clearTimeout(helperMouseDownTimer);
-                if (activeInputForHelper) {
-                    activeInputForHelper.value = item.dataset.value;
-                    activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
-                    addInputFieldAndFocus();
+        document.addEventListener('mouseup', e => {
+            if (!isPreviewing) return;
+            const finalItem = e.target.closest('.helper-item');
+            const shouldConfirm = finalItem && activeInputForHelper;
+            const valueToSet = shouldConfirm ? finalItem.dataset.value : originalInputValue;
+            
+            isPreviewing = false;
+            
+            if (activeInputForHelper) {
+                activeInputForHelper.value = valueToSet;
+                activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
+                if (shouldConfirm) {
+                    activeInputForHelper.focus();
                     hideInputHelper();
+                } else if (document.activeElement !== activeInputForHelper) {
+                    activeInputForHelper.focus();
                 }
-            } else { 
-                addInputFieldAndFocus();
-                hideInputHelper();
+            }
+            
+            originalInputValue = '';
+
+            setTimeout(() => {
+                isDraggingFromHelper = false;
+            }, 0);
+        });
+
+        inputHelperPopup.addEventListener('mouseleave', e => {
+            if (isPreviewing && activeInputForHelper) {
+                activeInputForHelper.value = originalInputValue;
+                activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
             }
         });
 
@@ -2811,6 +2848,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 hideInputHelper();
                 return;
             }
+
+            activeInputForHelper = inputElement;
+
             populateHelperContent(inputElement);
             const inputRect = inputElement.getBoundingClientRect();
             const containerRect = inputContainerWrapper.getBoundingClientRect();
@@ -2832,12 +2872,23 @@ document.addEventListener("DOMContentLoaded", function() {
                 y: 0,
                 autoAlpha: 1,
                 duration: 0.2 * animSpeedMultiplier,
-                ease: 'power2.out'
+                ease: 'power2.out',
+                overwrite: true
             });
         }
 
         function hideInputHelper() {
             if (inputHelperPopup.style.display === 'none') return;
+            
+            if (isPreviewing) {
+                if (activeInputForHelper) {
+                    activeInputForHelper.value = originalInputValue;
+                    activeInputForHelper.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                isPreviewing = false;
+                originalInputValue = '';
+            }
+
             gsap.to(inputHelperPopup, {
                 y: -10,
                 autoAlpha: 0,
@@ -2845,7 +2896,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 ease: 'power2.in',
                 onComplete: () => {
                     inputHelperPopup.style.display = 'none';
-                    activeInputForHelper = null;
+                    if (!document.activeElement.classList.contains('calc-input')) {
+                        activeInputForHelper = null;
+                    }
                     helperSelectedIndex = -1;
                 }
             });
@@ -2875,6 +2928,10 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         function updateHelperSuggestions(inputElement) {
+            if (isPreviewing) {
+                return;
+            }
+
             const rawValue = getRawValue(inputElement);
             if (rawValue.length > 8) {
                 hideInputHelper();
@@ -2959,9 +3016,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (activeInputForHelper) {
                         activeInputForHelper.value = items[helperSelectedIndex].dataset.value;
                         activeInputForHelper.dispatchEvent(new Event('input', {bubbles: true}));
+                        activeInputForHelper.focus();
+                        hideInputHelper();
                     }
-                    addInputFieldAndFocus();
-                    hideInputHelper();
                 }
                 return;
             }
@@ -3363,13 +3420,13 @@ document.addEventListener("DOMContentLoaded", function() {
             
             const targetHeight = Math.max(calculatedHeight, resultsHeight);
 
-                if (window.innerWidth > 1024) {
-                    gsap.to(inputContainerWrapper, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
-                } else {
-                    gsap.set(inputContainerWrapper, { clearProps: "minHeight" });
-                }
+            if (window.innerWidth > 1024) {
+                gsap.to(inputContainerWrapper, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
+            } else {
+                gsap.set(inputContainerWrapper, { clearProps: "minHeight" });
+            }
 
-                gsap.to(resultsContainer, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
+            gsap.to(resultsContainer, { minHeight: targetHeight, duration: 0.3, ease: 'power2.out' });
         }
 
         function toggleFullscreen() {
